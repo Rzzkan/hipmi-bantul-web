@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 
 import { PageView, pageMetadata } from '@/components/PageView'
-import { getPages } from '@/lib/api'
+import { getPages, safe } from '@/lib/api'
 
 /** Pre-render every published page at build time (Payload template does the same). */
 export async function generateStaticParams() {
-  const pages = await getPages()
+  const pages = await safe(getPages(), [])
   return pages.filter((p) => p.slug !== 'home').map((p) => ({ slug: p.slug }))
 }
 

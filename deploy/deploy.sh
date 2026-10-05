@@ -10,4 +10,4 @@ npm run build
 cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/
 cp .env.production.local .next/standalone/ 2>/dev/null || true
 pm2 reload deploy/ecosystem.config.js --update-env || pm2 start deploy/ecosystem.config.js
-echo "✅ Website hipmibantul.com ter-update"
+echo "✅ Website web.hipmibantul.com ter-update"

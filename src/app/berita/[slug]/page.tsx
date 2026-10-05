@@ -7,12 +7,12 @@ import { Container } from '@/components/Container'
 import { Media } from '@/components/Media'
 import { RichText } from '@/components/RichText'
 import { HeroBackground } from '@/heros/HeroBackground'
-import { getPost, getPosts } from '@/lib/api'
+import { getPost, getPosts, safe } from '@/lib/api'
 import { generateMeta } from '@/lib/generateMeta'
 import { formatDate } from '@/lib/utils'
 
 export async function generateStaticParams() {
-  const res = await getPosts({ limit: 50 })
+  const res = await safe(getPosts({ limit: 50 }), null)
   return (res?.data ?? []).map((p) => ({ slug: p.slug }))
 }
 
@@ -27,7 +27,7 @@ export default async function PostPage({ params }: PageProps<'/berita/[slug]'>) 
   const post = await getPost(slug)
   if (!post) notFound()
 
-  const related = (await getPosts({ limit: 4, category: post.category }))?.data.filter((p) => p.id !== post.id).slice(0, 3) ?? []
+  const related = (await safe(getPosts({ limit: 4, category: post.category }), null))?.data.filter((p) => p.id !== post.id).slice(0, 3) ?? []
 
   return (
     <article className="surface">

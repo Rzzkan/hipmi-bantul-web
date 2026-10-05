@@ -21,17 +21,6 @@ const nextConfig: NextConfig = {
     // Next 16 blocks optimizing images from private IPs (e.g. localhost API in dev).
     dangerouslyAllowLocalIP: process.env.NODE_ENV !== 'production',
   },
-  async redirects() {
-    // www → apex domain
-    return [
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'www.hipmibantul.com' }],
-        destination: 'https://hipmibantul.com/:path*',
-        permanent: true,
-      },
-    ]
-  },
 }
 
 export default nextConfig

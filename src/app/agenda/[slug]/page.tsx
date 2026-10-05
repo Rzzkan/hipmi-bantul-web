@@ -7,12 +7,12 @@ import { Container } from '@/components/Container'
 import { Media } from '@/components/Media'
 import { RichText } from '@/components/RichText'
 import { HeroBackground } from '@/heros/HeroBackground'
-import { getEvent, getEvents } from '@/lib/api'
+import { getEvent, getEvents, safe } from '@/lib/api'
 import { generateMeta } from '@/lib/generateMeta'
 import { formatDate, formatRupiah, formatTime } from '@/lib/utils'
 
 export async function generateStaticParams() {
-  const res = await getEvents({ when: 'upcoming', limit: 50 })
+  const res = await safe(getEvents({ when: 'upcoming', limit: 50 }), null)
   return (res?.data ?? []).map((e) => ({ slug: e.slug }))
 }
 

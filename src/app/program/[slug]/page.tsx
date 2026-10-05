@@ -7,12 +7,12 @@ import { Container } from '@/components/Container'
 import { Media } from '@/components/Media'
 import { RichText } from '@/components/RichText'
 import { HeroBackground } from '@/heros/HeroBackground'
-import { getProgram, getPrograms } from '@/lib/api'
+import { getProgram, getPrograms, safe } from '@/lib/api'
 import { generateMeta } from '@/lib/generateMeta'
 import { formatRupiah } from '@/lib/utils'
 
 export async function generateStaticParams() {
-  const programs = await getPrograms()
+  const programs = await safe(getPrograms(), [])
   return programs.map((p) => ({ slug: p.slug }))
 }
 

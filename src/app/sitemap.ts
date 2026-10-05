@@ -1,11 +1,16 @@
 import type { MetadataRoute } from 'next'
 
-import { getEvents, getPages, getPosts, getPrograms } from '@/lib/api'
+import { getEvents, getPages, getPosts, getPrograms, safe } from '@/lib/api'
 import { getSiteURL } from '@/lib/utils'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getSiteURL()
-  const [pages, posts, events, programs] = await Promise.all([getPages(), getPosts({ limit: 50 }), getEvents({ when: 'all', limit: 50 }), getPrograms()])
+  const [pages, posts, events, programs] = await Promise.all([
+    safe(getPages(), []),
+    safe(getPosts({ limit: 50 }), null),
+    safe(getEvents({ when: 'all', limit: 50 }), null),
+    safe(getPrograms(), []),
+  ])
 
   return [
     ...pages.map((p) => ({ url: p.slug === 'home' ? base : `${base}/${p.slug}`, lastModified: p.updatedAt })),
