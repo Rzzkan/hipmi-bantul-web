@@ -41,17 +41,17 @@ function Field({
 }) {
   return (
     <label className={cn('flex flex-col gap-1.5 text-sm', className)} htmlFor={name}>
-      <span className="font-medium text-slate-700">
-        {label} {required && <span className="text-red-500">*</span>}
+      <span className="font-semibold text-gray-700 dark:text-gray-300">
+        {label} {required && <span className="text-coral">*</span>}
       </span>
       {children}
-      {errors[name] && <span className="text-xs text-red-600">{errors[name][0]}</span>}
+      {errors[name] && <span className="text-xs font-medium text-coral-dark dark:text-coral">{errors[name][0]}</span>}
     </label>
   )
 }
 
 const input =
-  'w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-slate-900 outline-none transition focus:border-navy-600 focus:ring-2 focus:ring-navy-600/20'
+  'w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 placeholder-gray-400 outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/20 dark:border-white/10 dark:bg-ink-900 dark:text-white dark:placeholder-gray-500'
 
 /**
  * Posts straight to Laravel `POST /api/v1/registrations` (CORS enabled for the site origin).
@@ -112,15 +112,15 @@ export function RegistrationForm({
   if (status === 'success') {
     return (
       <div className="flex flex-col items-center gap-3 py-8 text-center">
-        <CheckCircle2 className="size-14 text-emerald-500" />
-        <p className="text-lg font-bold text-slate-900">Pendaftaran terkirim!</p>
-        <p className="max-w-md text-slate-600">{successMessage}</p>
+        <CheckCircle2 className="size-14 text-accent" />
+        <p className="text-lg font-bold text-heading">Pendaftaran terkirim!</p>
+        <p className="max-w-md text-muted">{successMessage}</p>
       </div>
     )
   }
 
   if (targetField && options.length === 0 && !defaultTargetId) {
-    return <p className="text-center text-slate-500">Belum ada pendaftaran yang dibuka saat ini.</p>
+    return <p className="text-center text-muted">Belum ada pendaftaran yang dibuka saat ini.</p>
   }
 
   return (
@@ -187,10 +187,10 @@ export function RegistrationForm({
         <textarea id="message" name="message" rows={4} className={input} />
       </Field>
 
-      {message && <p className="text-sm text-red-600 sm:col-span-2">{message}</p>}
+      {message && <p className="rounded-xl bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark sm:col-span-2 dark:text-coral">{message}</p>}
 
       <div className="sm:col-span-2">
-        <button type="submit" disabled={status === 'loading'} className={buttonClass('default', 'w-full bg-navy-900 py-3 text-base text-white hover:bg-navy-800 disabled:opacity-60 sm:w-auto sm:px-10')}>
+        <button type="submit" disabled={status === 'loading'} className={buttonClass('default', 'w-full py-4 text-base disabled:cursor-wait disabled:opacity-60 sm:w-auto sm:px-10')}>
           {status === 'loading' && <Loader2 className="size-4 animate-spin" />}
           Kirim pendaftaran
         </button>

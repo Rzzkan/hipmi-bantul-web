@@ -4,15 +4,24 @@ import { cn } from '@/lib/utils'
 import type { CMSLinkType } from '@/types/cms'
 
 const styles = {
-  default: 'bg-gold text-navy-900 hover:bg-gold/90 shadow-sm',
-  outline: 'border border-current hover:bg-white/10',
-  inline: 'underline underline-offset-4 hover:text-gold',
+  // Tombol emas bergradasi — sama seperti "Cari Bisnis" di katalog
+  default:
+    'bg-gradient-to-r from-primary to-primary-dark text-gray-900 shadow-md shadow-primary/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/30',
+  // Outline emas — seperti "Lihat Semua"
+  outline:
+    'border-2 border-primary text-primary-ink hover:bg-primary hover:text-gray-900 dark:text-primary-light dark:hover:text-gray-900',
+  // Hijau — seperti "Gabung BPC Hipmi Bantul"
+  accent:
+    'bg-gradient-to-r from-accent to-accent-dark text-white shadow-md shadow-accent/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-accent/30',
+  inline: 'font-semibold text-primary-ink underline-offset-4 hover:underline dark:text-primary',
 }
 
-export const buttonClass = (appearance: keyof typeof styles = 'default', className?: string) =>
+export type ButtonAppearance = keyof typeof styles
+
+export const buttonClass = (appearance: ButtonAppearance = 'default', className?: string) =>
   cn(
     appearance !== 'inline' &&
-      'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold',
+      'inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-bold transition-all duration-300 active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
     styles[appearance],
     className,
   )
@@ -25,7 +34,7 @@ export function CMSLink({
   children,
 }: {
   link: CMSLinkType
-  appearance?: keyof typeof styles
+  appearance?: ButtonAppearance
   className?: string
   children?: React.ReactNode
 }) {

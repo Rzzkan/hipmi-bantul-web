@@ -5,11 +5,11 @@ import type { MediaBlockType } from '@/types/cms'
 export function MediaBlock({ media, caption }: MediaBlockType) {
   if (!media) return null
   return (
-    <section className="py-10">
+    <section className="surface py-12">
       <Container>
         <figure>
-          <Media src={media} alt={caption ?? ''} className="aspect-[16/8] rounded-3xl" sizes="(min-width: 1152px) 1152px, 100vw" />
-          {caption && <figcaption className="mt-3 text-center text-sm text-slate-500">{caption}</figcaption>}
+          <Media src={media} alt={caption ?? ''} className="aspect-[16/8] rounded-3xl shadow-xl shadow-primary/10 dark:shadow-black/40" sizes="(min-width: 1280px) 1280px, 100vw" />
+          {caption && <figcaption className="mt-3 text-center text-sm text-muted">{caption}</figcaption>}
         </figure>
       </Container>
     </section>

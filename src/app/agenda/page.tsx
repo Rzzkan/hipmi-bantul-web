@@ -13,10 +13,12 @@ export default async function AgendaPage() {
   return (
     <>
       <PageHeader eyebrow="Agenda" title="Agenda & Event" description="Gathering, kelas, dan forum bisnis untuk anggota maupun umum." />
-      <Container className="py-14">
-        <h2 className="mb-6 text-2xl font-bold">Akan datang</h2>
+      <div className="surface relative">
+        <div className="absolute inset-x-0 top-0 divider-glow" />
+      <Container className="py-16">
+        <h2 className="mb-6 text-2xl font-extrabold text-heading">Akan datang</h2>
         {!upcoming?.data.length ? (
-          <p className="text-slate-500">Belum ada agenda terjadwal. Pantau terus ya!</p>
+          <p className="text-muted">Belum ada agenda terjadwal. Pantau terus ya!</p>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {upcoming.data.map((e) => (
@@ -27,7 +29,7 @@ export default async function AgendaPage() {
 
         {!!past?.data.length && (
           <>
-            <h2 className="mt-16 mb-6 text-2xl font-bold text-slate-500">Sudah berlangsung</h2>
+            <h2 className="mt-16 mb-6 text-2xl font-extrabold text-gray-400 dark:text-gray-500">Sudah berlangsung</h2>
             <div className="grid gap-4 opacity-75 md:grid-cols-2 lg:grid-cols-3">
               {past.data.map((e) => (
                 <EventCard key={e.id} event={e} />
@@ -36,6 +38,7 @@ export default async function AgendaPage() {
           </>
         )}
       </Container>
+      </div>
     </>
   )
 }

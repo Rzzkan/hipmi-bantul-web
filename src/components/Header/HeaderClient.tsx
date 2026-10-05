@@ -8,8 +8,32 @@ import { useEffect, useState } from 'react'
 
 import { CMSLink } from '@/components/CMSLink'
 import { Container } from '@/components/Container'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import { cn } from '@/lib/utils'
 import type { CMSLinkType } from '@/types/cms'
+
+/** Brand lockup: "BPC HIPMI Bantul" dengan "Bantul" berwarna emas — seperti katalog. */
+export function BrandLockup({ siteName, logo, subtitle }: { siteName: string; logo: string | null; subtitle?: string }) {
+  const match = siteName.match(/^(.*?)(\s+\S+)$/)
+  return (
+    <span className="flex items-center gap-2.5">
+      <Image src={logo ?? '/logo.svg'} alt="Logo BPC HIPMI Bantul" width={40} height={40} className="size-10 object-contain" unoptimized={!logo} />
+      <span className="flex flex-col">
+        <span className="text-lg leading-tight font-bold tracking-tight text-heading">
+          {match ? (
+            <>
+              {match[1]}
+              <span className="text-brand">{match[2]}</span>
+            </>
+          ) : (
+            siteName
+          )}
+        </span>
+        {subtitle && <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500">{subtitle}</span>}
+      </span>
+    </span>
+  )
+}
 
 export function HeaderClient({
   siteName,
@@ -27,6 +51,7 @@ export function HeaderClient({
   const [openOn, setOpenOn] = useState<string | null>(null)
   const open = openOn === pathname
   const [scrolled, setScrolled] = useState(false)
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
     onScroll()
@@ -39,60 +64,67 @@ export function HeaderClient({
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 border-b transition-colors',
-        scrolled || open ? 'border-white/10 bg-navy-900/95 backdrop-blur' : 'border-transparent bg-navy-900',
+        'sticky top-0 z-50 border-b transition-all duration-300',
+        scrolled || open
+          ? 'border-transparent bg-white/90 shadow-lg shadow-primary/5 backdrop-blur-xl dark:border-white/5 dark:bg-ink-950/90 dark:shadow-black/20'
+          : 'border-transparent bg-cream-light dark:bg-ink-950',
       )}
     >
-      <Container className="flex h-16 items-center justify-between gap-6 text-white">
-        <Link href="/" className="flex items-center gap-2.5 font-extrabold tracking-tight">
-          {logo ? (
-            <Image src={logo} alt={siteName} width={36} height={36} className="size-9 object-contain" />
-          ) : (
-            <span className="grid size-9 place-items-center rounded-lg bg-gold text-sm text-navy-900">HB</span>
-          )}
-          <span className="leading-tight">{siteName}</span>
+      <Container className="flex h-16 items-center gap-4 lg:h-20">
+        <Link href="/" className="shrink-0 transition hover:opacity-90">
+          <BrandLockup siteName={siteName} logo={logo} subtitle="Badan Pengurus Cabang" />
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Utama">
+        <nav className="ml-auto hidden items-center gap-1 md:flex" aria-label="Utama">
           {navItems.map((item) => (
             <Link
               key={item.url}
               href={item.url}
               className={cn(
-                'rounded-full px-3 py-2 text-sm font-medium text-white/80 transition hover:text-white',
-                isActive(item.url) && 'bg-white/10 text-white',
+                'relative rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-200',
+                isActive(item.url)
+                  ? 'bg-primary/10 text-primary-ink dark:text-primary'
+                  : 'text-gray-600 hover:bg-primary/5 hover:text-primary-ink dark:text-gray-300 dark:hover:bg-primary/10 dark:hover:text-primary',
               )}
             >
               {item.label}
+              {isActive(item.url) && <span className="absolute bottom-0 left-1/2 size-1 -translate-x-1/2 rounded-full bg-primary" />}
             </Link>
           ))}
-          {cta && <CMSLink link={cta} className="ml-3" />}
+          {cta && <CMSLink link={cta} appearance="accent" className="ml-2 px-5 py-2.5" />}
+          <ThemeToggle />
         </nav>
 
-        <button
-          type="button"
-          className="grid size-10 place-items-center rounded-full hover:bg-white/10 md:hidden"
-          onClick={() => setOpenOn(open ? null : pathname)}
-          aria-expanded={open}
-          aria-label={open ? 'Tutup menu' : 'Buka menu'}
-        >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+        <div className="ml-auto flex items-center gap-1 md:hidden">
+          <ThemeToggle />
+          <button
+            type="button"
+            className="grid size-10 place-items-center rounded-xl text-gray-700 hover:bg-primary/10 dark:text-gray-300"
+            onClick={() => setOpenOn(open ? null : pathname)}
+            aria-expanded={open}
+            aria-label={open ? 'Tutup menu' : 'Buka menu'}
+          >
+            {open ? <X className="size-6" /> : <Menu className="size-6" />}
+          </button>
+        </div>
       </Container>
 
       {open && (
-        <nav className="border-t border-white/10 md:hidden" aria-label="Mobile">
-          <Container className="flex flex-col gap-1 py-4">
+        <nav className="border-t border-gray-100 bg-white shadow-xl md:hidden dark:border-white/5 dark:bg-ink-950" aria-label="Mobile">
+          <Container className="flex flex-col gap-1 py-3">
             {navItems.map((item) => (
               <Link
                 key={item.url}
                 href={item.url}
-                className={cn('rounded-lg px-3 py-2.5 text-white/85', isActive(item.url) && 'bg-white/10 text-white')}
+                className={cn(
+                  'rounded-xl px-4 py-3 text-sm font-semibold',
+                  isActive(item.url) ? 'bg-primary/10 text-primary-ink dark:text-primary' : 'text-gray-600 dark:text-gray-300',
+                )}
               >
                 {item.label}
               </Link>
             ))}
-            {cta && <CMSLink link={cta} className="mt-3" />}
+            {cta && <CMSLink link={cta} appearance="accent" className="mt-2" />}
           </Container>
         </nav>
       )}

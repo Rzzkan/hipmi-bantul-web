@@ -1,31 +1,174 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
-/* Brand tokens — navy & gold khas HIPMI. Ubah di sini untuk ganti warna seluruh situs. */
+/* Dark mode via class `.dark` on <html> (light / dark / auto — sama seperti katalog.hipmibantul.com) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Brand tokens — diselaraskan dengan katalog.hipmibantul.com
+ * Kuning emas (primary) · Hijau (accent) · Coral · Cream, Plus Jakarta Sans.
+ */
 @theme {
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
 
-  --color-navy-50: #eef4ff;
-  --color-navy-100: #dbe6fe;
-  --color-navy-500: #2f5fd0;
-  --color-navy-600: #1f4cb8;
-  --color-navy-700: #163c99;
-  --color-navy-800: #0f2f78;
-  --color-navy-900: #0b2259;
-  --color-navy-950: #061538;
+  --color-primary: #ffc94d;
+  --color-primary-dark: #e6b03a;
+  --color-primary-light: #ffd876;
+  --color-primary-ink: #b9860a; /* teks emas di atas latar terang (kontras lebih baik) */
 
-  --color-gold: #f5b301;
-  --color-gold-700: #a26f00;
+  --color-accent: #18933c;
+  --color-accent-dark: #117530;
+  --color-accent-light: #3fb85f;
+
+  --color-coral: #fa6781;
+  --color-coral-dark: #e04d66;
+  --color-coral-light: #fb8fa3;
+
+  --color-cream: #fae7cb;
+  --color-cream-dark: #f0d4a8;
+  --color-cream-light: #fff9f0;
+
+  /* Permukaan mode gelap */
+  --color-ink-950: #0a0a0a;
+  --color-ink-900: #0d0f15;
+  --color-ink-850: #11131a;
+  --color-ink-800: #161a24;
+  --color-ink-700: #1f2533;
 }
 
 html {
   scroll-behavior: smooth;
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
 }
 
 body {
-  @apply bg-white text-slate-800;
+  @apply bg-cream-light text-[#2d3436] dark:bg-ink-950 dark:text-[#f1f2f6];
 }
 
 ::selection {
-  @apply bg-gold text-navy-950;
+  @apply bg-primary text-ink-950;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-cream dark:bg-ink-800;
+}
+::-webkit-scrollbar-thumb {
+  @apply rounded bg-primary hover:bg-primary-dark;
+}
+
+/* ---------- Reusable brand utilities ---------- */
+
+@utility text-heading {
+  @apply text-gray-900 dark:text-white;
+}
+
+@utility text-muted {
+  @apply text-gray-500 dark:text-gray-400;
+}
+
+@utility text-brand {
+  /* emas: versi gelap di mode terang agar terbaca */
+  @apply text-primary-ink dark:text-primary;
+}
+
+@utility surface {
+  @apply bg-white dark:bg-ink-900;
+}
+
+@utility surface-alt {
+  @apply bg-gradient-to-b from-white to-cream-light dark:from-ink-900 dark:to-ink-950;
+}
+
+@utility card {
+  @apply rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-white/5 dark:bg-ink-800 dark:shadow-black/40;
+}
+
+@utility card-hover {
+  @apply transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10 dark:hover:shadow-primary/5;
+}
+
+@utility badge {
+  @apply inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary-ink dark:text-primary;
+}
+
+@utility badge-accent {
+  @apply inline-block rounded-full bg-accent/15 px-4 py-1.5 text-sm font-semibold text-accent-dark dark:bg-accent/20 dark:text-accent-light;
+}
+
+@utility gradient-text {
+  background: linear-gradient(135deg, #ffc94d, #18933c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Grid + glow emas di sudut (hero gelap, khas katalog) */
+@utility brand-grid-glow {
+  background-image:
+    radial-gradient(circle at 8% 15%, rgba(255, 201, 77, 0.16), transparent 32%),
+    radial-gradient(circle at 92% 85%, rgba(255, 201, 77, 0.12), transparent 32%),
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size:
+    auto,
+    auto,
+    48px 48px,
+    48px 48px;
+}
+
+/* Versi terang: grid tipis + glow emas lembut */
+@utility brand-grid-glow-light {
+  background-image:
+    radial-gradient(circle at 8% 15%, rgba(255, 201, 77, 0.22), transparent 35%),
+    radial-gradient(circle at 92% 85%, rgba(24, 147, 60, 0.1), transparent 35%),
+    linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+  background-size:
+    auto,
+    auto,
+    48px 48px,
+    48px 48px;
+}
+
+@utility divider-glow {
+  @apply h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@utility animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Teks yang di-bold/italic di judul hero → gradasi emas-hijau (seperti "BPC HIPMI BANTUL" di katalog) */
+.hero-text :where(h1, h2, h3) :where(strong, em) {
+  font-style: normal;
+  background: linear-gradient(135deg, #ffc94d, #18933c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

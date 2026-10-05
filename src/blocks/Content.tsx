@@ -12,21 +12,20 @@ const colSpan = {
 }
 
 const bg = {
-  default: 'bg-white',
-  muted: 'bg-slate-50',
-  brand: 'bg-navy-900 text-white',
+  default: 'surface',
+  muted: 'bg-cream-light dark:bg-ink-950',
+  brand: 'dark bg-ink-950 brand-grid-glow text-white',
 }
 
 export function ContentBlock({ columns, background }: Props) {
-  const invert = background === 'brand'
-
   return (
-    <section className={cn('py-16 md:py-20', bg[background] ?? bg.default)}>
+    <section className={cn('relative py-20', bg[background] ?? bg.default)}>
+      <div className="absolute inset-x-0 top-0 divider-glow" />
       <Container className="grid grid-cols-1 gap-x-12 gap-y-8 lg:grid-cols-12">
         {columns.map((col, i) => (
           <div key={i} className={cn('col-span-1', colSpan[col.size] ?? colSpan.full)}>
-            <RichText html={col.richText} invert={invert} className="prose-h2:text-3xl" />
-            {col.link && <CMSLink link={col.link} appearance={invert ? col.link.appearance : 'inline'} className="mt-4 inline-block font-semibold text-navy-700" />}
+            <RichText html={col.richText} className="prose-h2:text-3xl sm:prose-h2:text-4xl prose-p:text-gray-600 dark:prose-p:text-gray-400" />
+            {col.link && <CMSLink link={col.link} className="mt-6" />}
           </div>
         ))}
       </Container>

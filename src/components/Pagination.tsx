@@ -28,8 +28,10 @@ export function Pagination({
           href={href(n)}
           aria-current={n === page ? 'page' : undefined}
           className={cn(
-            'grid size-10 place-items-center rounded-full border text-sm font-semibold',
-            n === page ? 'border-navy-900 bg-navy-900 text-white' : 'border-slate-200 hover:border-navy-700',
+            'grid size-10 place-items-center rounded-xl border text-sm font-bold transition',
+            n === page
+              ? 'border-primary bg-primary text-gray-900'
+              : 'border-gray-200 text-gray-600 hover:border-primary hover:text-primary-ink dark:border-white/10 dark:text-gray-300 dark:hover:text-primary',
           )}
         >
           {n}

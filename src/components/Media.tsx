@@ -18,10 +18,12 @@ export function Media({
   sizes?: string
 }) {
   if (!src) {
+    // Placeholder bernuansa katalog: cream→emas (terang) / grid gelap + glow (gelap)
     return (
-      <div className={cn('relative overflow-hidden bg-gradient-to-br from-navy-800 to-navy-600', className)} aria-hidden>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(245,179,1,.35),transparent_55%)]" />
-        <span className="absolute bottom-3 left-4 text-xs font-semibold tracking-widest text-white/50 uppercase">HIPMI Bantul</span>
+      <div className={cn('relative overflow-hidden bg-gradient-to-br from-cream-light via-cream to-primary/30 dark:from-ink-800 dark:via-ink-850 dark:to-ink-900', className)} aria-hidden>
+        <div className="absolute inset-0 hidden brand-grid-glow dark:block" />
+        <div className="absolute inset-0 brand-grid-glow-light dark:hidden" />
+        <span className="absolute bottom-3 left-4 text-[10px] font-bold tracking-widest text-gray-900/40 uppercase dark:text-white/30">BPC HIPMI Bantul</span>
       </div>
     )
   }

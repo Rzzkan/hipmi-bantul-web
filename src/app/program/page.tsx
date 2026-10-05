@@ -13,9 +13,11 @@ export default async function ProgramPage() {
   return (
     <>
       <PageHeader eyebrow="Program" title="Program HIPMI Bantul" description="Ikut tumbuh lewat program kaderisasi, pendampingan UMKM, sosial, dan networking." />
-      <Container className="py-14">
+      <div className="surface relative">
+        <div className="absolute inset-x-0 top-0 divider-glow" />
+      <Container className="py-16">
         {!programs.length ? (
-          <p className="text-slate-500">Belum ada program.</p>
+          <p className="text-muted">Belum ada program.</p>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {programs.map((p) => (
@@ -24,6 +26,7 @@ export default async function ProgramPage() {
           </div>
         )}
       </Container>
+      </div>
     </>
   )
 }

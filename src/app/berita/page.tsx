@@ -27,15 +27,19 @@ export default async function BeritaPage({ searchParams }: PageProps<'/berita'>)
   return (
     <>
       <PageHeader eyebrow="Berita" title="Kabar HIPMI Bantul" description="Kegiatan, opini, dan pengumuman terbaru dari pengurus." />
-      <Container className="py-14">
+      <div className="surface relative">
+        <div className="absolute inset-x-0 top-0 divider-glow" />
+      <Container className="py-16">
         <div className="mb-8 flex flex-wrap gap-2">
           {categories.map((c) => (
             <Link
               key={c.value}
               href={c.value ? `/berita?kategori=${c.value}` : '/berita'}
               className={cn(
-                'rounded-full border px-4 py-1.5 text-sm font-medium',
-                category === c.value ? 'border-navy-900 bg-navy-900 text-white' : 'border-slate-200 hover:border-navy-700',
+                'rounded-full border px-4 py-1.5 text-xs font-semibold transition sm:text-sm',
+                category === c.value
+                  ? 'border-primary bg-primary/10 text-primary-ink dark:text-primary'
+                  : 'border-gray-200 text-gray-500 hover:border-primary hover:text-primary-ink dark:border-white/10 dark:text-gray-400 dark:hover:text-primary',
               )}
             >
               {c.label}
@@ -44,7 +48,7 @@ export default async function BeritaPage({ searchParams }: PageProps<'/berita'>)
         </div>
 
         {!res?.data.length ? (
-          <p className="text-slate-500">Belum ada berita.</p>
+          <p className="text-muted">Belum ada berita.</p>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {res.data.map((post) => (
@@ -55,6 +59,7 @@ export default async function BeritaPage({ searchParams }: PageProps<'/berita'>)
 
         <Pagination page={page} totalPages={res?.meta.last_page ?? 1} basePath="/berita" query={category ? { kategori: category } : {}} />
       </Container>
+      </div>
     </>
   )
 }

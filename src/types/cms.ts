@@ -3,7 +3,7 @@
  * pages have `hero` + `layout` blocks with `blockType`).
  */
 
-export type LinkAppearance = 'default' | 'outline'
+export type LinkAppearance = 'default' | 'outline' | 'accent'
 
 export interface CMSLinkType {
   label: string
