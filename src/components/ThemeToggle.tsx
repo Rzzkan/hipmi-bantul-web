@@ -1,30 +1,59 @@
 'use client'
 
-import { Moon, Sun } from 'lucide-react'
+import { Monitor, Moon, Sun } from 'lucide-react'
+import { useSyncExternalStore } from 'react'
 
 import { cn } from '@/lib/utils'
 
-function apply(theme: 'light' | 'dark') {
-  document.documentElement.classList.toggle('dark', theme === 'dark')
-  try {
-    localStorage.setItem('theme', theme)
-  } catch {}
+type Mode = 'system' | 'light' | 'dark'
+
+const order: Mode[] = ['system', 'light', 'dark']
+const labels: Record<Mode, string> = {
+  system: 'Tema: ikuti perangkat',
+  light: 'Tema: terang',
+  dark: 'Tema: gelap',
 }
 
-/** Toggles light/dark; the current state lives on <html class="dark">, so no React state is needed. */
+declare global {
+  interface Window {
+    __applyTheme?: () => void
+  }
+}
+
+// The current mode lives on <html data-theme-mode> (set by ThemeScript) — read it as an external store.
+function subscribe(callback: () => void) {
+  const observer = new MutationObserver(callback)
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme-mode'] })
+  return () => observer.disconnect()
+}
+const getMode = () => (document.documentElement.dataset.themeMode as Mode) || 'system'
+
+function setMode(mode: Mode) {
+  try {
+    if (mode === 'system') localStorage.removeItem('theme-mode')
+    else localStorage.setItem('theme-mode', mode)
+  } catch {}
+  window.__applyTheme?.()
+}
+
+/** Cycles: ikuti perangkat → terang → gelap. Default is "ikuti perangkat". */
 export function ThemeToggle({ className }: { className?: string }) {
+  const mode = useSyncExternalStore(subscribe, getMode, () => 'system' as Mode)
+  const next = order[(order.indexOf(mode) + 1) % order.length]
+  const Icon = mode === 'light' ? Sun : mode === 'dark' ? Moon : Monitor
+
   return (
     <button
       type="button"
-      onClick={() => apply(document.documentElement.classList.contains('dark') ? 'light' : 'dark')}
+      onClick={() => setMode(next)}
       className={cn(
-        'relative grid size-10 cursor-pointer place-items-center rounded-xl text-gray-500 transition hover:bg-primary/10 hover:text-primary-ink dark:text-gray-400 dark:hover:text-primary',
+        'grid size-10 cursor-pointer place-items-center rounded-xl text-gray-500 transition hover:bg-primary/10 hover:text-primary-ink dark:text-gray-400 dark:hover:text-primary',
         className,
       )}
-      aria-label="Ubah tema terang/gelap"
+      aria-label={`${labels[mode]}. Klik untuk: ${labels[next].replace('Tema: ', '')}`}
+      title={labels[mode]}
     >
-      <Sun className="size-5 scale-100 rotate-0 transition-all duration-500 dark:scale-0 dark:rotate-90" />
-      <Moon className="absolute size-5 scale-0 -rotate-90 transition-all duration-500 dark:scale-100 dark:rotate-0" />
+      <Icon className="size-5" />
     </button>
   )
 }

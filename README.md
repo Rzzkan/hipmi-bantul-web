@@ -42,6 +42,9 @@ src/
 
 Formulir pendaftaran mengirim langsung ke `POST /api/v1/registrations` (pastikan `CORS_ALLOWED_ORIGINS` di Laravel memuat domain website).
 
+## Tema terang/gelap
+Otomatis mengikuti pengaturan HP/komputer pengunjung (dan ikut berganti saat pengaturan perangkat berubah). Tombol di header berputar: **ikuti perangkat → terang → gelap**; pilihan manual disimpan di browser pengunjung.
+
 ## Ganti warna brand
 Edit token di `src/app/globals.css` (`--color-navy-*`, `--color-gold`).
 
