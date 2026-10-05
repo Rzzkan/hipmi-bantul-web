@@ -78,17 +78,43 @@ export interface Program {
   meta: Meta
 }
 
+export interface SocialLink {
+  handle: string
+  url: string
+}
+
 export interface BoardMember {
   id: number
   name: string
   position: string
-  division: string | null
-  divisionLabel: string | null
+  level: 'inti' | 'bidang' | 'kompartemen'
+  divisionId: number | null
+  compartmentId: number | null
   photo: string | null
   company: string | null
   bio: string | null
-  instagram: string | null
-  linkedin: string | null
+  socials: Partial<Record<'instagram' | 'tiktok' | 'linkedin', SocialLink>>
+}
+
+export interface Compartment {
+  id: number
+  name: string
+  members: BoardMember[]
+}
+
+export interface Division {
+  id: number
+  number: number | null
+  name: string
+  label: string
+  description: string | null
+  leaders: BoardMember[]
+  compartments: Compartment[]
+}
+
+export interface BoardStructure {
+  inti: BoardMember[]
+  divisions: Division[]
 }
 
 export interface Partner {
@@ -144,8 +170,8 @@ export type ArchiveBlock = BlockBase & { introContent: string | null; limit: num
 export interface TeamBlock extends BlockBase {
   blockType: 'team'
   introContent: string | null
-  division: string | null
-  members: BoardMember[]
+  showInti: boolean
+  structure: BoardStructure
 }
 
 export interface PartnersBlock extends BlockBase {

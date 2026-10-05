@@ -1,6 +1,6 @@
 import 'server-only'
 
-import type { BoardMember, CMSEvent, Globals, Page, Paginated, Partner, Post, Program } from '@/types/cms'
+import type { BoardStructure, CMSEvent, Globals, Page, Paginated, Partner, Post, Program } from '@/types/cms'
 
 /**
  * Data layer — the counterpart of Payload's Local API calls in the website template.
@@ -89,7 +89,7 @@ export const getPrograms = async (category?: string) =>
 export const getProgram = async (slug: string) =>
   unwrap(await request<{ data: Program }>(`/programs/${encodeURIComponent(slug)}`, ['programs', `program:${slug}`]))
 
-export const getBoardMembers = async () =>
-  unwrap(await request<{ data: BoardMember[] }>('/board-members', ['board-members'])) ?? []
+export const getBoardStructure = async () =>
+  unwrap(await request<{ data: BoardStructure }>('/board-members', ['board-members']))
 
 export const getPartners = async () => unwrap(await request<{ data: Partner[] }>('/partners', ['partners'])) ?? []
