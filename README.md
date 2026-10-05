@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HIPMI Bantul — Website (Next.js)
 
-## Getting Started
+Frontend landing page **BPC HIPMI Bantul**. Strukturnya mengikuti **Payload CMS Website Template** (hero + layout *blocks*, `RenderBlocks`, `RenderHero`, `CMSLink`, `generateMeta`, on-demand revalidation), tetapi data diambil dari API Laravel di repo [`hipmi-bantul-api`](../hipmi-bantul-api).
 
-First, run the development server:
+| | |
+|---|---|
+| Framework | Next.js 16 (App Router) · React 19 · TypeScript |
+| Styling | Tailwind CSS 4 + Typography |
+| Data | `src/lib/api.ts` → `fetch` ber-*tag* + revalidate |
+
+## Jalankan lokal
+
+Pastikan API Laravel sudah jalan di `http://localhost:8000`.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local
+npm run dev          # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Struktur
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+├─ app/
+│  ├─ page.tsx                 # beranda → halaman CMS slug "home"
+│  ├─ [slug]/page.tsx          # semua halaman CMS (tentang, daftar, dst)
+│  ├─ berita/ , agenda/ , program/   # list + detail koleksi
+│  ├─ api/revalidate/route.ts  # dipanggil CMS saat konten berubah
+│  └─ sitemap.ts, robots.ts
+├─ heros/      # RenderHero: highImpact | mediumImpact | lowImpact
+├─ blocks/     # RenderBlocks + content, mediaBlock, cta, stats, archive, team, partners, form, faq
+├─ components/ # Header, Footer, CMSLink, RichText, Media, Cards, ...
+├─ lib/        # api.ts, utils.ts, generateMeta.ts
+└─ types/cms.ts
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Alur konten
+1. Pengurus mengedit di `/admin` (Laravel).
+2. Laravel mengirim `POST /api/revalidate` berisi tag (mis. `page:home`, `posts`).
+3. Next.js menandai cache basi → halaman tampil versi terbaru di kunjungan berikutnya. Fallback otomatis tiap `CMS_REVALIDATE_SECONDS`.
 
-## Learn More
+Formulir pendaftaran mengirim langsung ke `POST /api/v1/registrations` (pastikan `CORS_ALLOWED_ORIGINS` di Laravel memuat domain website).
 
-To learn more about Next.js, take a look at the following resources:
+## Ganti warna brand
+Edit token di `src/app/globals.css` (`--color-navy-*`, `--color-gold`).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy
+Vercel / VPS (`npm run build && npm start`). Isi env sesuai `.env.example`; `REVALIDATE_SECRET` harus sama dengan `FRONTEND_REVALIDATE_SECRET` di Laravel. Saat build, API harus bisa diakses (halaman dipre-render).

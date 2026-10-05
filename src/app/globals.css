@@ -1,26 +1,31 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Brand tokens — navy & gold khas HIPMI. Ubah di sini untuk ganti warna seluruh situs. */
+@theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --color-navy-50: #eef4ff;
+  --color-navy-100: #dbe6fe;
+  --color-navy-500: #2f5fd0;
+  --color-navy-600: #1f4cb8;
+  --color-navy-700: #163c99;
+  --color-navy-800: #0f2f78;
+  --color-navy-900: #0b2259;
+  --color-navy-950: #061538;
+
+  --color-gold: #f5b301;
+  --color-gold-700: #a26f00;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-white text-slate-800;
+}
+
+::selection {
+  @apply bg-gold text-navy-950;
 }
