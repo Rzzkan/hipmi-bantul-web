@@ -112,8 +112,20 @@ export interface Division {
   compartments: Compartment[]
 }
 
+export interface IntiBranch {
+  heads: BoardMember[]
+  deputies: BoardMember[]
+}
+
 export interface BoardStructure {
   inti: BoardMember[]
+  /** Org chart: Ketua Umum → (Sekretaris Umum + wakil-wakilnya) & (Bendahara + wakil-wakilnya) */
+  intiChart: {
+    ketua: BoardMember[]
+    sekretaris: IntiBranch
+    bendahara: IntiBranch
+    others: BoardMember[]
+  }
   divisions: Division[]
 }
 

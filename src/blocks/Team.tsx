@@ -5,32 +5,32 @@ import { Media } from '@/components/Media'
 import { SectionIntro } from '@/components/SectionIntro'
 import { SocialLinks } from '@/components/SocialIcons'
 import { cn } from '@/lib/utils'
-import type { BoardMember, Division, TeamBlock as Props } from '@/types/cms'
+import type { BoardMember, BoardStructure, Division, IntiBranch, TeamBlock as Props } from '@/types/cms'
 
 /* ------------------------------------------------------------------ */
 /* Member cards                                                        */
 /* ------------------------------------------------------------------ */
 
 /** Big vertical card — Pengurus Inti. */
-function MemberCard({ m, featured }: { m: BoardMember; featured?: boolean }) {
+function MemberCard({ m, featured, small }: { m: BoardMember; featured?: boolean; small?: boolean }) {
   return (
     <article
       className={cn(
         'card card-hover flex w-full flex-col items-center p-5 text-center',
-        featured ? 'max-w-xs border-primary/40 shadow-lg shadow-primary/10 sm:p-6' : 'max-w-[15rem]',
+        featured ? 'max-w-xs border-primary/40 shadow-lg shadow-primary/10 sm:p-6' : small ? 'max-w-[11.5rem] p-4' : 'max-w-[15rem]',
       )}
     >
       <Media
         src={m.photo}
         alt={m.name}
-        className={cn('aspect-square w-full rounded-full ring-4', featured ? 'max-w-36 ring-primary/50' : 'max-w-28 ring-primary/20')}
+        className={cn('aspect-square w-full rounded-full', featured ? 'max-w-36 ring-4 ring-primary/50' : small ? 'max-w-20 ring-2 ring-primary/20' : 'max-w-28 ring-4 ring-primary/20')}
         sizes="144px"
         placeholder="avatar"
       />
       <p className={cn('mt-4 rounded-full px-3 py-0.5 text-xs font-bold', featured ? 'bg-gradient-to-r from-primary to-primary-dark text-gray-900' : 'bg-primary/10 text-brand')}>
         {m.position}
       </p>
-      <h4 className={cn('mt-2 leading-snug font-bold text-heading', featured ? 'text-lg' : 'text-base')}>{m.name}</h4>
+      <h4 className={cn('mt-2 leading-snug font-bold text-heading', featured ? 'text-lg' : small ? 'text-sm' : 'text-base')}>{m.name}</h4>
       {m.company && <p className="mt-0.5 flex items-center gap-1 text-xs text-muted"><Building2 className="size-3" />{m.company}</p>}
       <div className="mt-3">
         <SocialLinks socials={m.socials} name={m.name} />
@@ -71,39 +71,79 @@ function Vacant({ label }: { label: string }) {
 /* Sections                                                            */
 /* ------------------------------------------------------------------ */
 
-/** Org-chart style: Ketua Umum on top, the rest of Pengurus Inti below, joined by a connector line. */
-function IntiChart({ members }: { members: BoardMember[] }) {
-  if (!members.length) return null
-  const [top, ...rest] = members
+const line = 'bg-primary/30'
+
+/** One branch under Ketua Umum: the head (Sekretaris Umum / Bendahara) with any number of wakil below. */
+function Branch({ branch }: { branch: IntiBranch }) {
+  return (
+    <div className="flex flex-col items-center">
+      <div className="flex flex-wrap justify-center gap-4">
+        {branch.heads.map((m) => (
+          <MemberCard key={m.id} m={m} />
+        ))}
+      </div>
+      {branch.deputies.length > 0 && (
+        <>
+          <div className={cn('h-6 w-px', line)} aria-hidden />
+          <div className="grid w-full grid-cols-2 justify-items-center gap-3 rounded-2xl border border-dashed border-primary/30 p-3 sm:flex sm:w-fit sm:max-w-[39rem] sm:flex-wrap sm:justify-center">
+            {branch.deputies.map((m) => (
+              <MemberCard key={m.id} m={m} small />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+/**
+ * Org chart for Pengurus Inti:
+ *            Ketua Umum
+ *        ┌───────┴───────┐
+ *  Sekretaris Umum    Bendahara
+ *   Wakil Sekretaris   Wakil Bendahara   (each can be more than one)
+ */
+function IntiChart({ chart }: { chart: BoardStructure['intiChart'] }) {
+  const branches = [chart.sekretaris, chart.bendahara].filter((b) => b.heads.length || b.deputies.length)
+  if (!chart.ketua.length && !branches.length && !chart.others.length) return null
 
   return (
     <div className="mb-20">
       <h3 className="mb-8 text-center text-sm font-bold tracking-widest text-accent-dark uppercase dark:text-accent-light">Pengurus Inti</h3>
       <div className="flex flex-col items-center">
-        <MemberCard m={top} featured />
-        {rest.length > 0 && (
+        <div className="flex flex-wrap justify-center gap-4">
+          {chart.ketua.map((m) => (
+            <MemberCard key={m.id} m={m} featured />
+          ))}
+        </div>
+
+        {branches.length > 0 && (
           <>
-            <div className="h-8 w-px bg-gradient-to-b from-primary/60 to-primary/30" aria-hidden />
-            {/* Classic org-chart branches: each child draws its own half of the horizontal bar,
-                so the bar spans exactly from the first to the last card. */}
-            <div className="flex w-full flex-wrap justify-center gap-y-4">
-              {rest.map((m, i) => (
-                <div key={m.id} className="relative flex w-1/2 justify-center px-2 sm:w-auto sm:px-3 sm:pt-8">
-                  {rest.length > 1 && (
+            {chart.ketua.length > 0 && <div className={cn('h-8 w-px', line)} aria-hidden />}
+            {/* Each branch draws its half of the horizontal bar so it spans exactly between the branches. */}
+            <div className="flex w-full flex-col items-center gap-8 md:flex-row md:items-start md:justify-center md:gap-0">
+              {branches.map((b, i) => (
+                <div key={i} className="relative flex justify-center md:px-6 md:pt-8">
+                  {branches.length > 1 && (
                     <span
-                      className={cn(
-                        'absolute top-0 hidden h-px bg-primary/30 sm:block',
-                        i === 0 ? 'right-0 left-1/2' : i === rest.length - 1 ? 'right-1/2 left-0' : 'inset-x-0',
-                      )}
+                      className={cn('absolute top-0 hidden h-px md:block', line, i === 0 ? 'right-0 left-1/2' : i === branches.length - 1 ? 'right-1/2 left-0' : 'inset-x-0')}
                       aria-hidden
                     />
                   )}
-                  <span className="absolute top-0 left-1/2 hidden h-8 w-px bg-primary/30 sm:block" aria-hidden />
-                  <MemberCard m={m} />
+                  <span className={cn('absolute top-0 left-1/2 hidden h-8 w-px md:block', line)} aria-hidden />
+                  <Branch branch={b} />
                 </div>
               ))}
             </div>
           </>
+        )}
+
+        {chart.others.length > 0 && (
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            {chart.others.map((m) => (
+              <MemberCard key={m.id} m={m} />
+            ))}
+          </div>
         )}
       </div>
     </div>
@@ -147,7 +187,7 @@ function DivisionCard({ d }: { d: Division }) {
 }
 
 export function TeamBlock({ introContent, structure }: Props) {
-  const { inti, divisions } = structure
+  const { intiChart, divisions } = structure
 
   return (
     <section className="surface-alt relative py-20">
@@ -155,7 +195,7 @@ export function TeamBlock({ introContent, structure }: Props) {
       <Container>
         <SectionIntro html={introContent} badge="Struktur Pengurus" center />
 
-        <IntiChart members={inti} />
+        <IntiChart chart={intiChart} />
 
         {divisions.length > 0 && (
           <div>
