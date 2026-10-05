@@ -45,5 +45,28 @@ Formulir pendaftaran mengirim langsung ke `POST /api/v1/registrations` (pastikan
 ## Ganti warna brand
 Edit token di `src/app/globals.css` (`--color-navy-*`, `--color-gold`).
 
-## Deploy
-Vercel / VPS (`npm run build && npm start`). Isi env sesuai `.env.example`; `REVALIDATE_SECRET` harus sama dengan `FRONTEND_REVALIDATE_SECRET` di Laravel. Saat build, API harus bisa diakses (halaman dipre-render).
+## Deploy ke `https://hipmibantul.com`
+
+URL produksi sudah diset di `.env.production` (API: `https://api.hipmibantul.com`). Yang perlu ditambahkan hanya rahasia:
+
+```env
+REVALIDATE_SECRET=<sama dengan FRONTEND_REVALIDATE_SECRET di Laravel>
+```
+
+**Deploy API dulu** — saat `npm run build`, halaman dipre-render dari `api.hipmibantul.com`.
+
+### Opsi A — Vercel (paling mudah)
+1. Import repo → framework Next.js (otomatis).
+2. Settings → Environment Variables → tambah `REVALIDATE_SECRET`.
+3. Domains → tambah `hipmibantul.com` & `www.hipmibantul.com` (www otomatis redirect ke apex via `next.config.ts`).
+
+### Opsi B — VPS (Nginx + PM2)
+```bash
+git clone … /var/www/hipmi-bantul-web && cd /var/www/hipmi-bantul-web
+echo "REVALIDATE_SECRET=..." > .env.production.local
+npm i -g pm2
+bash deploy/deploy.sh                    # build + jalankan di port 3000
+```
+Lalu salin `deploy/nginx-hipmibantul.com.conf` ke Nginx dan `sudo certbot --nginx -d hipmibantul.com -d www.hipmibantul.com`.
+
+> Untuk development lokal, `.env.local` (dari `.env.example`) mengarah ke `localhost:8000` dan otomatis menimpa `.env.production`.
