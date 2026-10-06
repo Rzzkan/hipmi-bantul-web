@@ -18,28 +18,47 @@ export class CmsUnavailableError extends Error {
   }
 }
 
+/** Retry on network errors and 5xx (e.g. a deploy/migration in progress on the API server). */
+const RETRIES = Number(process.env.CMS_FETCH_RETRIES || 3)
+const RETRY_DELAY_MS = 1500
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
 /**
  * Returns `null` only for a genuine API 404 (JSON). Network errors, 5xx and non-JSON
- * responses throw, so Next.js shows the error page and keeps the last good cached
- * version instead of caching a misleading "not found".
+ * responses throw (after retries), so Next.js shows the error page and keeps the last
+ * good cached version instead of caching a misleading "not found".
  */
 async function request<T>(path: string, tags: string[]): Promise<T | null> {
-  let res: Response
-  try {
-    res = await fetch(`${API_URL}${path}`, {
-      headers: { Accept: 'application/json' },
-      next: { tags, revalidate: REVALIDATE },
-    })
-  } catch (error) {
-    throw new CmsUnavailableError(path, (error as Error).message)
+  for (let attempt = 1; ; attempt++) {
+    const retryable = attempt <= RETRIES
+    let res: Response
+    try {
+      res = await fetch(`${API_URL}${path}`, {
+        headers: { Accept: 'application/json' },
+        next: { tags, revalidate: REVALIDATE },
+      })
+    } catch (error) {
+      if (retryable) {
+        console.warn(`[cms] ${path}: ${(error as Error).message} — coba lagi (${attempt}/${RETRIES})`)
+        await sleep(RETRY_DELAY_MS * attempt)
+        continue
+      }
+      throw new CmsUnavailableError(path, (error as Error).message)
+    }
+
+    if (res.status >= 500 && retryable) {
+      console.warn(`[cms] ${path}: HTTP ${res.status} — coba lagi (${attempt}/${RETRIES})`)
+      await sleep(RETRY_DELAY_MS * attempt)
+      continue
+    }
+
+    const isJson = res.headers.get('content-type')?.includes('application/json')
+    if (!isJson) throw new CmsUnavailableError(path, `HTTP ${res.status}, bukan respons JSON — cek URL API / document root server`)
+    if (res.status === 404) return null
+    if (!res.ok) throw new CmsUnavailableError(path, `HTTP ${res.status}`)
+
+    return (await res.json()) as T
   }
-
-  const isJson = res.headers.get('content-type')?.includes('application/json')
-  if (!isJson) throw new CmsUnavailableError(path, `HTTP ${res.status}, bukan respons JSON — cek URL API / document root server`)
-  if (res.status === 404) return null
-  if (!res.ok) throw new CmsUnavailableError(path, `HTTP ${res.status}`)
-
-  return (await res.json()) as T
 }
 
 /** For non-critical data (static params, sitemap): log and fall back instead of failing. */
