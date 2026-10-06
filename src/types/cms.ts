@@ -190,6 +190,11 @@ export interface PartnersBlock extends BlockBase {
   blockType: 'partners'
   introContent: string | null
   partners: Partner[]
+  /** Jumlah logo yang tampil awal (0 = semua). */
+  limit?: number
+  moreLabel?: string
+  /** Bila diisi, tombol menjadi link; bila kosong, tombol membuka sisa logo. */
+  moreUrl?: string | null
 }
 
 export type FormType = 'membership' | 'event' | 'program'

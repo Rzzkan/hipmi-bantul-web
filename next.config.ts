@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns,
     // Next 16 blocks optimizing images from private IPs (e.g. localhost API in dev).
-    dangerouslyAllowLocalIP: process.env.NODE_ENV !== 'production',
+    dangerouslyAllowLocalIP: process.env.NODE_ENV !== 'production' || process.env.ALLOW_LOCAL_IMAGES === '1',
   },
 }
 
