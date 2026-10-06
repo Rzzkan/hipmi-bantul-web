@@ -202,6 +202,17 @@ export interface FormBlockType extends BlockBase {
   options: { value: number; label: string }[]
 }
 
+/** Formulir eksternal (Google Form) yang di-embed lewat iframe. */
+export interface EmbedBlockType extends BlockBase {
+  blockType: 'embed'
+  provider: 'google-form'
+  introContent: string | null
+  embedUrl: string
+  openUrl: string
+  height: number
+  buttonLabel: string
+}
+
 export type LayoutBlock =
   | ContentBlock
   | MediaBlockType
@@ -212,6 +223,7 @@ export type LayoutBlock =
   | TeamBlock
   | PartnersBlock
   | FormBlockType
+  | EmbedBlockType
 
 export interface Page {
   id: number

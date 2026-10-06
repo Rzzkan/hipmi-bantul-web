@@ -3,6 +3,7 @@ import type { LayoutBlock } from '@/types/cms'
 import { ArchiveBlock } from './ArchiveBlock'
 import { CallToActionBlock } from './CallToAction'
 import { ContentBlock } from './Content'
+import { EmbedBlock } from './Embed'
 import { FaqBlock } from './Faq'
 import { FormBlock } from './Form'
 import { MediaBlock } from './MediaBlock'
@@ -25,6 +26,7 @@ const blockComponents = {
   partners: PartnersBlock,
   form: FormBlock,
   faq: FaqBlock,
+  embed: EmbedBlock,
 } as const
 
 export function RenderBlocks({ blocks }: { blocks?: LayoutBlock[] | null }) {
