@@ -13,11 +13,14 @@ const pattern = (raw: string | undefined, pathname: string): RemotePattern | nul
  * 1. Laravel server disk  → https://api.hipmibantul.com/storage/**   (MEDIA_DISK=public)
  * 2. Cloudflare R2        → CMS_MEDIA_CDN_URL, e.g. https://media.hipmibantul.com (MEDIA_DISK=r2)
  * 3. Any *.r2.dev public bucket URL, so R2 works even before a custom domain is set up.
+ * 4. Any *.hipmibantul.com subdomain — the R2 base URL can be changed in the admin
+ *    (Pengaturan Situs → Media) without touching Vercel. Another domain? set CMS_MEDIA_CDN_URL.
  */
 const remotePatterns = [
   pattern(process.env.CMS_MEDIA_URL || process.env.NEXT_PUBLIC_API_URL || 'https://api.hipmibantul.com', '/storage/**'),
   pattern(process.env.CMS_MEDIA_CDN_URL, '/**'),
   { protocol: 'https', hostname: '**.r2.dev', pathname: '/**' } satisfies RemotePattern,
+  { protocol: 'https', hostname: '**.hipmibantul.com', pathname: '/**' } satisfies RemotePattern,
 ].filter((p): p is RemotePattern => Boolean(p))
 
 const nextConfig: NextConfig = {
